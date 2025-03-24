@@ -1,0 +1,23 @@
+<%-layout("../layouts/boilerplate.ejs")-%>
+<body>
+    <h3>Listings</h3>
+    <!-- <form action="http://localhost:8080/listings/new" >
+        <button>Create New Listing</button>
+    </form> -->
+    <div class="row row-cols-lg-3 row-cols-md-2">
+            <% for( i=0;i<allListings.length;i++) { %>
+                   <a class="link" href="http://localhost:8080/listings/<%=allListings[i]._id%>">
+                    <div class="card col listing-card" >
+                        <img src="<%=allListings[i].image.url %>" class="card-img-top" alt="...">
+                        <div class="card-img-overlay"></div>
+                        <div class="card-body">
+                          <p class="card-text">
+                            <b><%=allListings[i].title %> </b><br>
+                            &#8377; <%=allListings[i].price.toLocaleString("en-IN") %>/night 
+                        </div>
+                      </div>
+                   </a>
+                  <%}%>
+        
+    </div>    
+</body>
