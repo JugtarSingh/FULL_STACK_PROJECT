@@ -5,7 +5,7 @@ const { listingSchema } = require("../schema.js");
 const ExpressError=require("../utils/ExpressError.js");
 const Listing =require("../models/listing.js");
 const { reviewSchema } = require("../schema.js");
-
+const {isLoggedIn}=require("../middleware.js");
 
 
 const validateListing= (req,res,next)=>{
@@ -27,7 +27,8 @@ router.get("/",wrapAsync(async(req,res)=>{
 }))
 
 //new route
-router.get ("/new", (req,res)=>{
+router.get ("/new", isLoggedIn,(req,res)=>{
+    
     res.render("new.ejs");
 });
 
@@ -43,21 +44,21 @@ router.get("/:id",wrapAsync(async(req,res)=>{
 }));
 
 //Create Route
-router.post("/",validateListing,wrapAsync(async(req,res)=>{
+router.post("/", isLoggedIn,validateListing,wrapAsync(async(req,res)=>{
     // if(!req.body){
     //     throw new ExpressError(400,"Send a valid data for listing");
     // }
     const data=req.body
     const list=new Listing(data);
     await list.save() .then ((res)=>{
-        console.log(res)
+        console.log(res);
     })
     req.flash("success","New Listing Created!");
     res.redirect("/listings");
 }));
 
 //edit
-router.get("/:id/edit", wrapAsync(async (req,res)=>{
+router.get("/:id/edit", isLoggedIn,wrapAsync(async (req,res)=>{
     let {id}=req.params;
     const list= await Listing.findById(id);
     if(!list){
@@ -68,17 +69,17 @@ router.get("/:id/edit", wrapAsync(async (req,res)=>{
 }));
 
 //Update
-router.post("/:id/edit",validateListing,wrapAsync(async(req,res)=>{
+router.post("/:id/edit", isLoggedIn,validateListing,wrapAsync(async(req,res)=>{
     let {id}=req.params;
     await Listing.findOneAndUpdate({_id:id} ,req.body).then((result)=>{
         console.log(result);
     })
     req.flash("success","Listing Updated!");
-    res.redirect("/listings");
+    res.redirect(`/listings/${id}`);
 }));
 
 //Delete
-router.get("/:id/delete", wrapAsync(async(req,res)=>{
+router.get("/:id/delete", isLoggedIn, wrapAsync(async(req,res)=>{
     let {id}=req.params;
     await Listing.findByIdAndDelete(id).then((result)=>{
         console.log(result);
