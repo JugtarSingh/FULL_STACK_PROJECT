@@ -27,9 +27,12 @@ module.exports.createListing=async(req,res)=>{
     // if(!req.body){
     //     throw new ExpressError(400,"Send a valid data for listing");
     // }
-    const data=req.body
+    let url=req.file.path;
+    let filename=req.file.filename;
+    const data=req.body;
     const list=new Listing(data);
     list.owner= req.user._id;
+    list.image={url,filename};
     await list.save() .then ((res)=>{
         console.log(res);
     })
@@ -49,9 +52,15 @@ module.exports.renderEditForm=async (req,res)=>{
 
 module.exports.updateListing=async(req,res)=>{
     let {id}=req.params;
-    await Listing.findOneAndUpdate({_id:id} ,req.body).then((result)=>{
-        console.log(result);
-    })
+    let listing = await Listing.findOneAndUpdate({_id:id} ,req.body)
+    console.log(req.file);
+    if(req.file){
+    let url=req.file.path;
+    let filename=req.file.filename;
+    listing.image={url,filename};
+    await listing.save();
+    }
+   
     req.flash("success","Listing Updated!");
     res.redirect(`/listings/${id}`);
 };

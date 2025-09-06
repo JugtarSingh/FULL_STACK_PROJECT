@@ -5,10 +5,22 @@ const Listing =require("../models/listing.js");
 const { reviewSchema } = require("../schema.js");
 const {isLoggedIn, isOwner,validateListing}=require("../middleware.js");
 const listingController=require("../controllers/listings.js");
+const multer  = require('multer');
+const {storage} = require("../cloudinary.js");
+// const upload = multer({storage});
+const parser = multer({ storage: storage });
 
-//Index
-router.get("/",
-    wrapAsync(listingController.index));
+router.route("/")
+    .get(wrapAsync(listingController.index))  // index 
+    .post(isLoggedIn,
+        parser.single("image[url]"),
+        validateListing,
+        wrapAsync(listingController.createListing));
+    // .post(
+    //     parser.single("image[url]"),(req,res)=>{
+    //     res.send(req.file);
+    //     }
+    // )
 
 //new route
 router.get ("/new",
@@ -19,24 +31,16 @@ router.get ("/new",
 router.get("/:id",
     wrapAsync(listingController.showListing));
 
-//Create Route (Create new listing )
-router.post("/", 
-    isLoggedIn,
-    validateListing,
-    wrapAsync(listingController.createListing));
 
-//edit
-router.get("/:id/edit",
-     isLoggedIn,
-     isOwner,
-     wrapAsync(listingController.renderEditForm));
-
-//Update
-router.post("/:id/edit", 
-    isLoggedIn,
-    isOwner,
-    validateListing,
-    wrapAsync(listingController.updateListing));
+router.route("/:id/edit")
+    .get(isLoggedIn,           //edit
+        isOwner,
+        wrapAsync(listingController.renderEditForm))
+    .post(isLoggedIn,          //Update
+            isOwner,
+            parser.single("image[url]"),
+            validateListing,
+            wrapAsync(listingController.updateListing));
 
 //Delete
 router.get("/:id/delete",

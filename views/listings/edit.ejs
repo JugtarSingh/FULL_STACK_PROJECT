@@ -3,7 +3,12 @@
     <div class="row">
         <div class="col-8 offset-2">
             <h3 class="mt-3">Edit Listing Details</h3>
-    <form action="http://localhost:8080/listings/<%=list._id%>/edit"  novalidate class="needs-validation" method="POST">
+    <form action="http://localhost:8080/listings/<%=list._id%>/edit"  
+      novalidate 
+      class="needs-validation" 
+      method="POST"
+      enctype="multipart/form-data"
+      >
         <div class="mb-3">
             <label class="form-label">Title</label>
             <input type="text" class="form-control" name="title" placeholder="Enter the title" value="<%=list.title%>" required>
@@ -15,11 +20,14 @@
             <textarea type="text" name="description" placeholder="Enter the description"  class="form-control" required><%= list.description %></textarea>
             <div class="invalid-feedback">Please enter a short description</div>
           </div>
+
+          <div class="mb-3">
+            <img src="<%=list.image.url %>" style="height: 13rem;  width: 12rem; " alt="">
+          </div>
  
           <div class="mb-3">
-            <label  class="form-label">Image-url</label>
-            <input type="text" name="image[url]" placeholder="url" class="form-control" value="<%=list.image.url %>" required>
-            <div class="invalid-feedback">Please enter the valid image link</div>
+            <label  class="form-label">Upload-Image</label>
+            <input type="file" name="image[url]"  class="form-control" >
           </div>
 
           <div class="row">

@@ -1,3 +1,7 @@
+if(process.env.NODE_ENV!="production"){
+    require('dotenv').config();
+}
+
 const express=require("express");
 const app=express();
 const path=require("path");
@@ -34,8 +38,10 @@ const sessionOptions={
     },
 }
 
+const dbUrl = process.env.ATLASDB_URL;
 async function main() {
-    mongoose.connect("mongodb://127.0.0.1:27017/wanderlust");
+    mongoose.connect(dbUrl)
+      .catch(err => console.error("MongoDB connection error:", err));
 }
 
 main().then(()=>{
@@ -43,9 +49,9 @@ main().then(()=>{
 })
 .catch(err=>{console.log(err);})
 
-app.get("/",(req,res)=>{
-    res.send("Hi i am root")
-});
+// app.get("/",(req,res)=>{
+//     res.send("Hi i am root")
+// });
 
 
 app.use(session(sessionOptions));
